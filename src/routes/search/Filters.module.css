@@ -1,0 +1,9 @@
+.min_input::-webkit-slider-thumb {
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.min_input::-moz-range-thumb {
+  pointer-events: all;
+  cursor: pointer;
+}

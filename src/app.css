@@ -1,0 +1,154 @@
+/* Satoshi */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-BlackItalic.woff2') format('woff2');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-LightItalic.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-MediumItalic.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi_Complete/Satoshi-BoldItalic.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Integral */
+@font-face {
+  font-family: 'Integral';
+  src: url('/fonts/Integral_CF/integralcf-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Integral';
+  src: url('/fonts/Integral_CF/integralcf-medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Integral';
+  src: url('/fonts/Integral_CF/integralcf-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Optional convenience variables */
+:root {
+  --background: #fff;
+  --foreground: #171717;
+  --font-satoshi: 'Satoshi', system-ui, sans-serif;
+  --font-integral: 'Integral', system-ui, sans-serif;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background-color: black;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+input[type='range']::-moz-range-thumb {
+  -moz-appearance: none;
+  background-color: black;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  color: var(--foreground);
+  background: var(--background);
+
+  /* noinspection CssUnresolvedCustomProperty */
+  font-family: var(--font-satoshi);
+}
+
+body,
+html {
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  /* noinspection CssUnresolvedCustomProperty */
+  font-family: var(--font-integral);
+}
+
+footer {
+  align-self: end;
+}
+
+svg:hover {
+  opacity: 0.6;
+}

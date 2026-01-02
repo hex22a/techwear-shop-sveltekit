@@ -1,0 +1,15 @@
+<script lang="ts">
+  interface Props {
+    height?: number;
+    width?: number;
+    class?: string;
+  }
+
+  let { height = 24, width = 24, class: className = '' }: Props = $props();
+</script>
+
+<svg xmlns="http://www.w3.org/2000/svg" {height} {width} class={className} fill="none"
+  ><path
+    d="m21.796 20.204-4.452-4.454a8.636 8.636 0 1 0-1.594 1.594l4.456 4.457a1.126 1.126 0 1 0 1.594-1.594l-.004-.003ZM4.125 10.5a6.375 6.375 0 1 1 6.375 6.375A6.381 6.381 0 0 1 4.125 10.5Z"
+  /></svg
+>
