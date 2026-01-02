@@ -102,7 +102,6 @@ describe('redis', () => {
 
     test('consecutive imports', async () => {
       // Arrange
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { default: expectedImportedRedis } = await import('./redis');
 
       // Act

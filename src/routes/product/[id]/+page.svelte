@@ -6,8 +6,8 @@
   import Stars from '$lib/components/Stars.svelte';
   import Price from '$lib/components/Price.svelte';
   import Tabs from './Tabs.svelte';
-  // import AddToCartForm from './AddToCartForm.svelte';
   import type { Color, Size } from '$lib/definitions';
+  import AddToCartForm from './AddToCartForm.svelte';
 
   const sitePath = [
     {
@@ -80,7 +80,7 @@
       </div>
       <p>{data.product.description}</p>
       <hr class="my-6" />
-      <!--			<AddToCartForm product_id={data.product.id} sizes={sizesArray} colors={colorsArray}/>-->
+      <AddToCartForm product_id={data.product.id} sizes={sizesArray} colors={colorsArray} />
     </div>
   </main>
   <Tabs

@@ -1,17 +1,34 @@
+<script lang="ts">
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import { signOut } from '@auth/sveltekit/client';
+
+  import UserPic from '$lib/icons/userpic.svelte';
+  import WebauthnForm from '$lib/components/header/WebauthnForm.svelte';
+
+  let isMiniSignInVisible = $state(false);
+
+  function toggleMiniSignIn() {
+    isMiniSignInVisible = !isMiniSignInVisible;
+  }
+</script>
+
 <div class="relative">
-	<Link class="block md:hidden" href="/signin">
-		<UserPic />
-	</Link>
-	<button onClick={toggleMiniSignIn} class="hidden md:block">
-		<UserPic />
-	</button>
-	{isMiniSignInVisible &&
-	<div class="absolute top-10 right-0 w-72 bg-black text-white rounded-xl shadow-lg p-4">
-		{session ?
-			<button onClick={() => signOut()} class="w-full border border-white rounded-full text-white">Sign Out</button>
-			:
-			<WebauthnForm />
-		}
-	</div>
-	}
+  <a class="block md:hidden" href={resolve('/signin')}>
+    <UserPic />
+  </a>
+  <button onclick={toggleMiniSignIn} class="hidden md:block">
+    <UserPic />
+  </button>
+  {#if isMiniSignInVisible}
+    <div class="absolute top-10 right-0 w-72 rounded-xl bg-black p-4 text-white shadow-lg">
+      {#if page.data.session}
+        <button onclick={() => signOut()} class="w-full rounded-full border border-white text-white"
+          >Sign Out</button
+        >
+      {:else}
+        <WebauthnForm />
+      {/if}
+    </div>
+  {/if}
 </div>

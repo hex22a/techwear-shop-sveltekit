@@ -142,9 +142,7 @@ describe('webauthn', () => {
         data: expectedRegistrationOptions
       };
       (mockFindUser as Mock).mockResolvedValue(expectedUser);
-      (mockGenerateRegistrationOptions as Mock).mockResolvedValue(
-        expectedRegistrationOptions
-      );
+      (mockGenerateRegistrationOptions as Mock).mockResolvedValue(expectedRegistrationOptions);
 
       // Act
       const actualResponse = await generateWebAuthnRegistrationOptions(

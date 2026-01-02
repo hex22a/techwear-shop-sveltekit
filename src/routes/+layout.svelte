@@ -99,6 +99,6 @@
   />
 </svelte:head>
 
-<Header/>
+<Header />
 {@render children()}
-<Footer/>
+<Footer />

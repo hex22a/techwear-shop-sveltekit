@@ -119,7 +119,7 @@
         <SearchResultsHeader {...searchResultsHeaderProps} />
       </div>
       <div class="grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3">
-        {#each items as item, i (item.id)}
+        {#each items as item (item.id)}
           <div>
             <Item {...item} />
           </div>

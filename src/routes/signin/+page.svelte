@@ -1,9 +1,9 @@
 <script lang="ts">
-	import SignInForm from '$lib/components/SigninForm.svelte';
+  import SignInForm from '$lib/components/SigninForm.svelte';
 </script>
 
-<main class="flex-grow flex flex-row justify-center items-center mt-5 mb-20">
-	<div class="border rounded-xl p-4 w-96">
-		<SignInForm />
-	</div>
+<main class="mt-5 mb-20 flex flex-grow flex-row items-center justify-center">
+  <div class="w-96 rounded-xl border p-4">
+    <SignInForm />
+  </div>
 </main>

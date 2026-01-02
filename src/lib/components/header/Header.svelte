@@ -99,9 +99,9 @@
         <a href={resolve('/cart')}>
           <Cart />
         </a>
-<!--          <SessionProvider>-->
-<!--            <UserButton />-->
-<!--          </SessionProvider>-->
+        <!--          <SessionProvider>-->
+        <!--            <UserButton />-->
+        <!--          </SessionProvider>-->
       </div>
     </div>
   </nav>
