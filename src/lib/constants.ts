@@ -3,7 +3,7 @@ export const REDIS_LOCAL_URL = 'redis://localhost:6379';
 export const RP_NAME = 'Techwear Shop';
 export const RP_ID = process.env.RP_ID || 'localhost';
 export const USER_VERIFICATION_MODE = 'preferred';
-export const ORIGIN = process.env.ORIGIN || `http://localhost:3000`;
+export const ORIGIN = process.env.ORIGIN || `http://localhost:5173`;
 
 export const USER_ALREADY_EXISTS_ERROR_MESSAGE = 'User already exists';
 export const USER_NOT_FOUND_ERROR_MESSAGE = 'User not found.';

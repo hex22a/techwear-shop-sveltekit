@@ -6,6 +6,7 @@
   import SlimArrow from '$lib/icons/slim-arrow.svelte';
   import Cart from '$lib/icons/cart.svelte';
   import Search from '$lib/icons/search.svelte';
+  import UserButton from '$lib/components/header/UserButton.svelte';
 
   let isDiscountVisible = true;
   let isSearchExpanded = false;
@@ -99,9 +100,7 @@
         <a href={resolve('/cart')}>
           <Cart />
         </a>
-        <!--          <SessionProvider>-->
-        <!--            <UserButton />-->
-        <!--          </SessionProvider>-->
+        <UserButton />
       </div>
     </div>
   </nav>

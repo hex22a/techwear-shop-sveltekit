@@ -4,6 +4,7 @@
   import { type WebAuthnResponse } from '$lib/webauthn.server';
   import { z } from 'zod';
   import { startAuthentication } from '@simplewebauthn/browser';
+  import { signIn } from '@auth/sveltekit/client';
 
   let error = $state('');
 
@@ -34,10 +35,24 @@
     try {
       const parsedOptions = response.data as PublicKeyCredentialRequestOptionsJSON;
       const localResponse = await startAuthentication({ optionsJSON: parsedOptions });
-      const result = await signIn('credentials', {
+
+      const verifyRes = await fetch('/api/webauthn/login/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ localResponse })
+      });
+
+      const verifyResult = await verifyRes.json();
+      console.log(verifyResult);
+
+      if (!verifyResult.success) {
+        error = 'Authentication failed';
+        return;
+      }
+      const result = await signIn('webauthn', {
         redirect: false,
         username: parsedCredentials.data.username,
-        webauthnResponse: JSON.stringify(localResponse)
+        webauthnVerified: true,
       });
 
       if (result?.error) {

@@ -26,6 +26,7 @@
     }
 
     const localResponse = await startRegistration({ optionsJSON: optionsResponse.data });
+    console.log(localResponse);
     const verifyRes = await fetch('/api/webauthn/register/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
