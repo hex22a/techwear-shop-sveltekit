@@ -1,6 +1,9 @@
 import redis from './redis';
 import type { Base64URLString } from '@simplewebauthn/server';
 import {
+  USER_SESSION_ID_COOKIE_NAME,
+  USER_SESSION_PREFIX,
+  USER_SESSION_TTL,
   WEBAUTHN_SESSION_ID_COOKIE_NAME,
   WEBAUTHN_SESSION_PREFIX,
   WEBAUTHN_SESSION_TTL
@@ -12,6 +15,10 @@ export type WebauthnSessionData = {
   username?: string;
 };
 
+export type UserSessionData = {
+  id?: string;
+}
+
 async function getSessionData<T>(prefix: string, sessionId: string): Promise<T> {
   const sessionData = await redis.get(prefix + sessionId);
   return sessionData ? JSON.parse(sessionData) : (null as T);
@@ -19,6 +26,10 @@ async function getSessionData<T>(prefix: string, sessionId: string): Promise<T> 
 
 export async function getWebauthnSession(sessionId: string): Promise<WebauthnSessionData> {
   return getSessionData<WebauthnSessionData>(WEBAUTHN_SESSION_PREFIX, sessionId);
+}
+
+export async function getUserSession(sessionId: string): Promise<UserSessionData> {
+  return getSessionData<UserSessionData>(USER_SESSION_PREFIX, sessionId);
 }
 
 async function setSession<T>(
@@ -35,6 +46,13 @@ export async function setWebauthnSession(
   sessionData: WebauthnSessionData
 ): Promise<void> {
   await setSession(WEBAUTHN_SESSION_PREFIX, sessionId, sessionData, WEBAUTHN_SESSION_TTL);
+}
+
+export async function setUserSession(
+  sessionId: string,
+  sessionData: UserSessionData
+): Promise<void> {
+  await setSession(USER_SESSION_PREFIX, sessionId, sessionData, USER_SESSION_TTL);
 }
 
 async function fetchCurrentSession<T>(
@@ -87,6 +105,27 @@ export async function getCurrentWebauthnSession(
   );
 }
 
+export async function getCurrentUserSession(
+  cookies: Cookies
+): Promise<{ sessionId: string; data: UserSessionData }> {
+  const session = await fetchCurrentSession<UserSessionData>(
+    cookies,
+    WEBAUTHN_SESSION_ID_COOKIE_NAME,
+    getUserSession
+  );
+  if (session) {
+    return session;
+  }
+  return createNewSession<UserSessionData>(
+    cookies,
+    WEBAUTHN_SESSION_ID_COOKIE_NAME,
+    setUserSession,
+    {
+      id: undefined
+    }
+  );
+}
+
 async function deleteSession(
   getSession: () => Promise<{ sessionId: string } | null>
 ): Promise<void> {
@@ -103,6 +142,16 @@ export async function deleteCurrentWebauthnSession(cookies: Cookies): Promise<vo
     cookies,
     WEBAUTHN_SESSION_ID_COOKIE_NAME,
     getWebauthnSession
+  );
+  await deleteSession(getCurSession);
+}
+
+export async function deleteCurrentUserSession(cookies: Cookies): Promise<void> {
+  const getCurSession = (fetchCurrentSession<UserSessionData>).bind(
+    null,
+    cookies,
+    USER_SESSION_ID_COOKIE_NAME,
+    getUserSession
   );
   await deleteSession(getCurSession);
 }
@@ -146,6 +195,30 @@ export async function updateCurrentWebauthnSession(
       cookies,
       WEBAUTHN_SESSION_ID_COOKIE_NAME,
       setWebauthnSession
+    ),
+    data
+  );
+}
+
+export async function updateCurrentUserSession(
+  cookies: Cookies,
+  data: UserSessionData
+): Promise<void> {
+  await updateSession(
+    cookies,
+    USER_SESSION_ID_COOKIE_NAME,
+    (fetchCurrentSession<UserSessionData>).bind(
+      null,
+      cookies,
+      USER_SESSION_ID_COOKIE_NAME,
+      getUserSession
+    ),
+    setUserSession,
+    (createNewSession<UserSessionData>).bind(
+      null,
+      cookies,
+      USER_SESSION_ID_COOKIE_NAME,
+      setUserSession
     ),
     data
   );

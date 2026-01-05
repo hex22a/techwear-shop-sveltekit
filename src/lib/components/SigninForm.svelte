@@ -48,10 +48,6 @@
         error = 'Authentication failed';
         return;
       }
-
-      // if (result?.error) {
-      //   error = 'Authentication failed.';
-      // }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error, error.message);

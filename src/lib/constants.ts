@@ -21,3 +21,7 @@ export const FAILED_TO_ADD_REVIEW_ERROR_MESSAGE = 'Failed to add review.';
 export const WEBAUTHN_SESSION_ID_COOKIE_NAME = 'w-session-id';
 export const WEBAUTHN_SESSION_PREFIX = 'techwear-shop-webauthn-session-';
 export const WEBAUTHN_SESSION_TTL = 5 * 60;
+
+export const USER_SESSION_ID_COOKIE_NAME = 'user-session-id';
+export const USER_SESSION_PREFIX = 'techwear-shop-user-session-';
+export const USER_SESSION_TTL = 7 * 24 *60 * 60;
