@@ -1,7 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { signOut } from '@auth/sveltekit/client';
 
   import UserPic from '$lib/icons/userpic.svelte';
   import WebauthnForm from '$lib/components/header/WebauthnForm.svelte';
@@ -23,9 +22,9 @@
   {#if isMiniSignInVisible}
     <div class="absolute top-10 right-0 w-72 rounded-xl bg-black p-4 text-white shadow-lg">
       {#if page.data.session}
-        <button onclick={() => signOut()} class="w-full rounded-full border border-white text-white"
-          >Sign Out</button
-        >
+        <form action="/api/signout" method="POST">
+          <button type="submit" class="w-full rounded-full border border-white text-white">Sign Out</button>
+        </form>
       {:else}
         <WebauthnForm />
       {/if}
