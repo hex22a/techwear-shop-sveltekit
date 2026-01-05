@@ -51,6 +51,7 @@
   "packageManager": "pnpm@9.2.0+sha1.886364ebd6dae009284bebc56ed4296bb6dd557a",
   "dependencies": {
     "@auth/core": "^0.34.3",
+    "@auth/pg-adapter": "^1.11.1",
     "@auth/sveltekit": "^1.11.1",
     "@simplewebauthn/browser": "^13.2.2",
     "@simplewebauthn/server": "^13.2.2",

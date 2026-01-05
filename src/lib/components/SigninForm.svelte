@@ -43,17 +43,17 @@
       });
 
       const verifyResult = await verifyRes.json();
-      console.log(verifyResult);
 
       if (!verifyResult.success) {
         error = 'Authentication failed';
         return;
       }
-      const result = await signIn('webauthn', {
+      const result = await signIn('passkey', {
         redirect: false,
-        username: parsedCredentials.data.username,
-        webauthnVerified: true,
+        email: parsedCredentials.data.username,
       });
+
+      console.log('passkey result', result);
 
       if (result?.error) {
         error = 'Authentication failed.';
