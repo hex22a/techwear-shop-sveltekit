@@ -4,7 +4,6 @@
   import { type WebAuthnResponse } from '$lib/webauthn.server';
   import { z } from 'zod';
   import { startAuthentication } from '@simplewebauthn/browser';
-  import { signIn } from '@auth/sveltekit/client';
 
   let error = $state('');
 
@@ -43,21 +42,16 @@
       });
 
       const verifyResult = await verifyRes.json();
+      console.log(verifyResult);
 
       if (!verifyResult.success) {
         error = 'Authentication failed';
         return;
       }
-      const result = await signIn('passkey', {
-        redirect: false,
-        email: parsedCredentials.data.username,
-      });
 
-      console.log('passkey result', result);
-
-      if (result?.error) {
-        error = 'Authentication failed.';
-      }
+      // if (result?.error) {
+      //   error = 'Authentication failed.';
+      // }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error, error.message);

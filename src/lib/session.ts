@@ -12,21 +12,12 @@ export type WebauthnSessionData = {
   username?: string;
 };
 
-export type AuthSessionData = {
-  userId: string;
-  expires: string;
-};
-
-const AUTH_SESSION_PREFIX = 'auth:session:';
-const AUTH_SESSION_TTL = 60 * 60 * 24 * 30; // 30 days
-const VERIFICATION_TOKEN_PREFIX = 'auth:verification:';
-
-async function getSessionData<T>(prefix: string, sessionId: string): Promise<T | null> {
+async function getSessionData<T>(prefix: string, sessionId: string): Promise<T> {
   const sessionData = await redis.get(prefix + sessionId);
-  return sessionData ? JSON.parse(sessionData) : null;
+  return sessionData ? JSON.parse(sessionData) : (null as T);
 }
 
-export async function getWebauthnSession(sessionId: string): Promise<WebauthnSessionData | null> {
+export async function getWebauthnSession(sessionId: string): Promise<WebauthnSessionData> {
   return getSessionData<WebauthnSessionData>(WEBAUTHN_SESSION_PREFIX, sessionId);
 }
 
@@ -49,7 +40,7 @@ export async function setWebauthnSession(
 async function fetchCurrentSession<T>(
   cookies: Cookies,
   cookieName: string,
-  fetchSession: (sessionId: string) => Promise<T | null>
+  fetchSession: (sessionId: string) => Promise<T>
 ): Promise<{ sessionId: string; data: T } | null> {
   const sessionCookie = cookies.get(cookieName);
 
@@ -158,56 +149,4 @@ export async function updateCurrentWebauthnSession(
     ),
     data
   );
-}
-
-// ============ NEW AUTH SESSION METHODS ============
-
-export async function createAuthSession(sessionToken: string, userId: string, expires: Date): Promise<void> {
-  await setSession(AUTH_SESSION_PREFIX, sessionToken, { userId, expires: expires.toISOString() }, AUTH_SESSION_TTL);
-}
-
-export async function getAuthSession(sessionToken: string): Promise<AuthSessionData | null> {
-  return getSessionData<AuthSessionData>(AUTH_SESSION_PREFIX, sessionToken);
-}
-
-export async function updateAuthSession(sessionToken: string, expires: Date): Promise<void> {
-  const session = await getAuthSession(sessionToken);
-  if (!session) return;
-
-  session.expires = expires.toISOString();
-  await setSession(AUTH_SESSION_PREFIX, sessionToken, session, AUTH_SESSION_TTL);
-}
-
-export async function deleteAuthSession(sessionToken: string): Promise<void> {
-  await redis.del(AUTH_SESSION_PREFIX + sessionToken);
-}
-
-// ============ VERIFICATION TOKEN METHODS ============
-
-export async function createVerificationToken(identifier: string, token: string, expires: Date): Promise<void> {
-  const ttl = Math.floor((expires.getTime() - Date.now()) / 1000);
-  await setSession(
-    VERIFICATION_TOKEN_PREFIX,
-    `${identifier}:${token}`,
-    { identifier, expires: expires.toISOString(), token },
-    ttl > 0 ? ttl : 60
-  );
-}
-
-export async function useVerificationToken(identifier: string, token: string): Promise<{ identifier: string; expires: Date; token: string } | null> {
-  const key = `${identifier}:${token}`;
-  const data = await getSessionData<{ identifier: string; expires: string; token: string }>(
-    VERIFICATION_TOKEN_PREFIX,
-    key
-  );
-
-  if (!data) return null;
-
-  await redis.del(VERIFICATION_TOKEN_PREFIX + key);
-
-  return {
-    identifier: data.identifier,
-    expires: new Date(data.expires),
-    token: data.token
-  };
 }
