@@ -24,4 +24,4 @@ export const WEBAUTHN_SESSION_TTL = 5 * 60;
 
 export const USER_SESSION_ID_COOKIE_NAME = 'user-session-id';
 export const USER_SESSION_PREFIX = 'techwear-shop-user-session-';
-export const USER_SESSION_TTL = 7 * 24 *60 * 60;
+export const USER_SESSION_TTL = 7 * 24 * 60 * 60;

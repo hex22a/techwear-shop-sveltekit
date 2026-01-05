@@ -1,9 +1,10 @@
 import type { Cookies, RequestHandler } from '@sveltejs/kit';
 import { verifyWebAuthnLogin } from '$lib/webauthn.server';
 import type { AuthenticationResponseJSON } from '@simplewebauthn/server';
-import { setUserSession } from '$lib/session';
+import { setUserSession, updateCurrentUserSession } from '$lib/session';
 
 import { randomBytes } from 'crypto';
+import { USER_SESSION_ID_COOKIE_NAME } from '$lib/constants';
 
 export const POST: RequestHandler = async ({
   cookies,
@@ -18,7 +19,8 @@ export const POST: RequestHandler = async ({
   const result = await verifyWebAuthnLogin(cookies, localResponse);
   if (result.success) {
     const sessionToken = randomBytes(32).toString('hex');
-    await setUserSession(sessionToken, { id: result.userId });
+    cookies.set(USER_SESSION_ID_COOKIE_NAME, sessionToken, { path: '/' });
+    await updateCurrentUserSession(cookies, { id: result.userId });
   }
 
   return new Response(JSON.stringify(result));
