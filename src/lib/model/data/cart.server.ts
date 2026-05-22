@@ -26,7 +26,7 @@ export async function createCart(cart: CartSubmission): Promise<CartSubmission> 
     return queryResult.rows[0];
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to create cart');
+    throw new Error('Failed to create cart', { cause: error });
   }
 }
 
@@ -94,6 +94,6 @@ export async function getCart(user_id: string): Promise<Cart> {
     };
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch cart');
+    throw new Error('Failed to fetch cart', { cause: error });
   }
 }

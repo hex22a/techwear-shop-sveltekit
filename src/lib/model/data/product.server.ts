@@ -44,7 +44,7 @@ export async function fetchNewArrivals(): Promise<Product[]> {
     );
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch new arrivals.');
+    throw new Error('Failed to fetch new arrivals.', { cause: error });
   }
 }
 
@@ -85,7 +85,7 @@ export async function fetchTopSelling(): Promise<Product[]> {
     );
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch new arrivals.');
+    throw new Error('Failed to fetch new arrivals.', { cause: error });
   }
 }
 
@@ -246,7 +246,7 @@ export async function fetchProduct(id: number): Promise<ProductComplete> {
     return product;
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error(`Failed to fetch product id: ${id}`);
+    throw new Error(`Failed to fetch product id: ${id}`, { cause: error });
   }
 }
 
@@ -305,6 +305,6 @@ export async function findProductsFts(searchText: string): Promise<Product[]> {
     );
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error(`Failed to perform full-text search. Query: ${searchText}`);
+    throw new Error(`Failed to perform full-text search. Query: ${searchText}`, { cause: error });
   }
 }

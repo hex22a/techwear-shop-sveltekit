@@ -14,8 +14,8 @@
     }
   ];
 
-  let data: PageData;
-  let { cart } = data;
+  export let data: PageData;
+  let { cart } = $derived(data);
 </script>
 
 <div class="mx-auto mt-0 mb-20 w-96 md:w-[78rem]">

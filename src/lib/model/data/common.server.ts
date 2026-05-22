@@ -16,7 +16,7 @@ export async function fetchAllColors(): Promise<Color[]> {
     return queryResult.rows.map((row) => ({ ...row }));
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch colors.');
+    throw new Error('Failed to fetch colors.', { cause: error });
   }
 }
 
@@ -26,7 +26,7 @@ export async function fetchAllSizes(): Promise<Size[]> {
     return queryResult.rows.map((row) => ({ ...row }));
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch sizes.');
+    throw new Error('Failed to fetch sizes.', { cause: error });
   }
 }
 
@@ -36,7 +36,7 @@ export async function fetchAllStyles(): Promise<Style[]> {
     return queryResult.rows.map((row) => ({ ...row }));
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch dress styles.');
+    throw new Error('Failed to fetch dress styles.', { cause: error });
   }
 }
 
@@ -46,6 +46,6 @@ export async function fetchAllCategories(): Promise<Category[]> {
     return queryResult.rows.map((row) => ({ ...row }));
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch dress categories.');
+    throw new Error('Failed to fetch dress categories.', { cause: error });
   }
 }

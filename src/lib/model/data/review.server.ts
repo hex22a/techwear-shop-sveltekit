@@ -32,7 +32,7 @@ export async function addReview(review: Review): Promise<ReviewComplete> {
     return queryResult.rows[0];
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error(`Failed to add review: ${review}`);
+    throw new Error(`Failed to add review: ${review}`, { cause: error });
   }
 }
 
@@ -56,6 +56,6 @@ export async function getTopReviews(): Promise<ReviewComplete[]> {
     return queryResult.rows.map((row) => ({ ...row }));
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error('Failed to fetch reviews');
+    throw new Error('Failed to fetch reviews', { cause: error });
   }
 }

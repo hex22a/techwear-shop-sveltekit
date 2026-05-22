@@ -45,7 +45,7 @@ export async function getAllowCredentials(username: string): Promise<UserCredent
     return user;
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error(`Failed to fetch user: ${username}`);
+    throw new Error(`Failed to fetch user: ${username}`, { cause: error });
   }
 }
 
@@ -94,7 +94,7 @@ export async function createUser(username: string, passkey: PasskeySerialized): 
     return queryResult.rows[0];
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error(`Failed to create user: ${username}`);
+    throw new Error(`Failed to create user: ${username}`, { cause: error });
   }
 }
 
@@ -108,6 +108,6 @@ export async function getPasskeyWithUserId(
     return queryResult.rows[0];
   } catch (error) {
     console.error(`Database error: ${error}`);
-    throw new Error(`Failed to fetch passkey: ${cred_id}`);
+    throw new Error(`Failed to fetch passkey: ${cred_id}`, { cause: error });
   }
 }
