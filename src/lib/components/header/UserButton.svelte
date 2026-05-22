@@ -23,7 +23,9 @@
     <div class="absolute top-10 right-0 w-72 rounded-xl bg-black p-4 text-white shadow-lg">
       {#if page.data.session}
         <form action="/api/signout" method="POST">
-          <button type="submit" class="w-full rounded-full border border-white text-white">Sign Out</button>
+          <button type="submit" class="w-full rounded-full border border-white text-white"
+            >Sign Out</button
+          >
         </form>
       {:else}
         <WebauthnForm />

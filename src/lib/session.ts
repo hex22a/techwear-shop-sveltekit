@@ -127,7 +127,7 @@ async function deleteSession(
   if (session) {
     const { sessionId } = session;
     await redis.del(prefix + sessionId);
-   }
+  }
 }
 
 export async function deleteCurrentWebauthnSession(cookies: Cookies): Promise<void> {
@@ -136,7 +136,7 @@ export async function deleteCurrentWebauthnSession(cookies: Cookies): Promise<vo
     cookies,
     WEBAUTHN_SESSION_ID_COOKIE_NAME,
     getWebauthnSession
-   );
+  );
   await deleteSession(getCurSession, WEBAUTHN_SESSION_PREFIX);
 }
 
@@ -146,7 +146,7 @@ export async function deleteCurrentUserSession(cookies: Cookies): Promise<void> 
     cookies,
     USER_SESSION_ID_COOKIE_NAME,
     getUserSession
-   );
+  );
   await deleteSession(getCurSession, USER_SESSION_PREFIX);
 }
 
