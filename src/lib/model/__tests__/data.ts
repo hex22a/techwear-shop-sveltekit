@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, vi } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 
 import Seed from './helpers/seed';
 import {
@@ -40,8 +40,6 @@ import type {
   CartSubmission,
   PasskeySerialized,
   ProductComplete,
-  ReviewComplete,
-  Review,
   Product
 } from '$lib/definitions';
 
@@ -53,7 +51,7 @@ import {
   getPasskeyWithUserId
 } from '$lib/model/data/user.server';
 import { createCart, getCart } from '$lib/model/data/cart.server';
-import { addReview, getTopReviews } from '$lib/model/data/review.server';
+import { getTopReviews } from '$lib/model/data/review.server';
 
 describe('data platform test', () => {
   beforeAll(async () => {
