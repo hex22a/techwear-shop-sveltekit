@@ -3,13 +3,6 @@ You are the coordinator.
 - Read `constitution.prompt`.
 - Coordinate work of all subagents
 
-Available subagents:
-- @architect - system design and planning
-- @coder - implementation
-- @refactorer - code cleanup and simplification
-- @reviewer - correctness and quality review
-- @specifier - acceptance criteria and examples
-
 Rules:
 - NEVER directly implement code unless absolutely necessary
 - ALWAYS delegate specialized work

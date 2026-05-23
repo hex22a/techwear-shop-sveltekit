@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest';
-// import type { Mock } from 'vitest';
 
 import Seed from './helpers/seed';
 import {
@@ -46,7 +45,6 @@ import type {
   Product
 } from '$lib/definitions';
 
-// import { auth as mockAuth } from '@/auth';
 import { fetchProduct, findProductsFts } from '$lib/model/data/product.server';
 import {
   createUser,
@@ -56,10 +54,6 @@ import {
 } from '$lib/model/data/user.server';
 import { createCart, getCart } from '$lib/model/data/cart.server';
 import { addReview, getTopReviews } from '$lib/model/data/review.server';
-
-vi.mock('@/auth', () => ({
-  auth: vi.fn()
-}));
 
 describe('data platform test', () => {
   beforeAll(async () => {
@@ -237,17 +231,16 @@ describe('data platform test', () => {
         review_text: expectedReviewText,
         title: expectedReviewTitle
       };
-      const expectedAddedReview = expect.objectContaining({
-        id: expect.any(Number),
-        product_id: expectedProductIdNapapijri,
-        rating: expectedRating,
-        review_text: expectedReviewText,
-        title: expectedReviewTitle,
-        created_at: expect.any(Date)
-      });
-      // (mockAuth as Mock).mockResolvedValue({ user: { id: expectedUserId } });
+       const expectedAddedReview = expect.objectContaining({
+         id: expect.any(Number),
+         product_id: expectedProductIdNapapijri,
+         rating: expectedRating,
+         review_text: expectedReviewText,
+         title: expectedReviewTitle,
+         created_at: expect.any(Date)
+        });
 
-      // When
+       // When
       const actualReview: ReviewComplete = await addReview(expectedReview);
 
       // Then

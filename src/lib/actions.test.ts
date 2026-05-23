@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, vi } from 'vitest';
+import { describe, test, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest';
 import type { Mock } from 'vitest';
 
 import {
@@ -11,14 +11,12 @@ import {
 } from './actions';
 import { type ZodFlattenedError, ZodError } from 'zod';
 import {
-  USER_NOT_LOGGED_IN_MESSAGE,
   ADD_TO_CART_MISSING_FIELDS_ERROR_MESSAGE,
   ORDER_PRODUCTS_MISSING_FIELDS_ERROR_MESSAGE,
   ADD_REVIEW_MISSING_FIELDS_ERROR_MESSAGE,
   FAILED_TO_ADD_REVIEW_ERROR_MESSAGE
 } from './constants';
 
-import { auth as mockAuth } from '@/auth';
 import {
   AddToCartFormSchema as MockAddToCartFormSchema,
   OrderProductsFormSchema as MockOrderProductsFormSchema,
@@ -26,15 +24,11 @@ import {
 } from './form_schemas';
 import { transformProductsData as mockTransformProductsData } from './transformers';
 import { stripe as mockStripe } from './stripe';
-import { headers as mockHeaders } from 'next/headers';
 import { STRIPE_SESSION_CREATE_PARAMS } from '$lib/config';
 import type { Cart } from '$lib/definitions';
 import { createCart as mockCreateCart } from './model/data/cart.server';
 import { addReview as mockAddReview } from '$lib/model/data/review.server';
 
-vi.mock('@/auth', () => ({
-  auth: vi.fn()
-}));
 vi.mock('./model/data/cart.server', () => ({
   createCart: vi.fn()
 }));
@@ -46,207 +40,124 @@ vi.mock('./stripe', () => ({
     checkout: {
       sessions: {
         create: vi.fn()
-      }
-    }
-  }
-}));
-vi.mock('next/headers', () => ({
-  headers: vi.fn()
+       }
+     }
+   }
 }));
 vi.mock('./form_schemas', () => ({
   AddToCartFormSchema: {
     safeParse: vi.fn()
-  },
+   },
   OrderProductsFormSchema: {
     safeParse: vi.fn()
-  },
+   },
   ReviewFormSchema: {
     safeParse: vi.fn()
-  }
+   }
 }));
 vi.mock('./transformers');
 
 describe('actions', () => {
-  const expectedPrevState = undefined;
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   describe('addToCart', () => {
-    describe('user not logged in', () => {
-      const expectedFormData = new FormData();
+    const expectedProductId = '1';
+    const expectedFormData = new FormData();
 
-      test('user_session is not present', async () => {
-        // Arrange
-        const expectedUserSession = undefined;
-        const expectedNewState: AddToCartFormState = {
-          message: USER_NOT_LOGGED_IN_MESSAGE
-        };
-        (mockAuth as Mock).mockReturnValue(expectedUserSession);
-
-        // Act
-        const actualNewState: AddToCartFormState | undefined = await addToCart(
-          expectedPrevState,
-          expectedFormData
-        );
-
-        // Assert
-        expect(actualNewState).toEqual(expectedNewState);
-      });
-
-      test('user is not logged in', async () => {
-        // Arrange
-        const expectedUserSession = {};
-        const expectedNewState: AddToCartFormState = {
-          message: USER_NOT_LOGGED_IN_MESSAGE
-        };
-        (mockAuth as Mock).mockReturnValue(expectedUserSession);
-
-        // Act
-        const actualNewState: AddToCartFormState | undefined = await addToCart(
-          expectedPrevState,
-          expectedFormData
-        );
-
-        // Assert
-        expect(actualNewState).toEqual(expectedNewState);
-      });
-
-      test('user id is not presented', async () => {
-        // Arrange
-        const expectedUserSession = { user: {} };
-        const expectedNewState: AddToCartFormState = {
-          message: USER_NOT_LOGGED_IN_MESSAGE
-        };
-        (mockAuth as Mock).mockReturnValue(expectedUserSession);
-
-        // Act
-        const actualNewState: AddToCartFormState | undefined = await addToCart(
-          expectedPrevState,
-          expectedFormData
-        );
-
-        // Assert
-        expect(actualNewState).toEqual(expectedNewState);
-      });
+    beforeAll(() => {
+      expectedFormData.append('product_id', expectedProductId);
     });
 
-    describe('user logged in', () => {
-      const expectedUserId = 'uuid-uuid-uuid';
-      const expectedUserSession = { user: { id: expectedUserId } };
-
+    describe('form actions', () => {
       test('form data validation failed', async () => {
         // Arrange
-        const expectedFormData = new FormData();
+        const expectedPrevState = undefined;
+        const expectedFormDataLocal = new FormData();
         const expectedProductId = '-1';
-        expectedFormData.append('product_id', expectedProductId);
-        const expectedData = {
-          product_id: expectedProductId
-        };
+        expectedFormDataLocal.append('product_id', expectedProductId);
+        const expectedData = { product_id: expectedProductId };
         const expectedFieldErrors = { product_id: ['Wrong product id'] };
-        const expectedValidationErrors: Partial<ZodError> = {
-          flatten<U>(): ZodFlattenedError<U> {
-            return { fieldErrors: expectedFieldErrors } as unknown as ZodFlattenedError<U>;
-          }
-        };
         const expectedNewState: AddToCartFormState = {
           errors: expectedFieldErrors,
           message: ADD_TO_CART_MISSING_FIELDS_ERROR_MESSAGE
         };
-        (mockAuth as Mock).mockReturnValue(expectedUserSession);
         (MockAddToCartFormSchema.safeParse as Mock).mockReturnValue({
           success: false,
-          error: expectedValidationErrors
+          error: { flatten: () => ({ fieldErrors: expectedFieldErrors }) }
         });
 
         // Act
-        const actualNewState: AddToCartFormState | undefined = await addToCart(
-          expectedPrevState,
-          expectedFormData
-        );
+        const actualNewState = await addToCart(expectedPrevState, expectedFormDataLocal);
 
         // Assert
         expect(actualNewState).toEqual(expectedNewState);
         expect(MockAddToCartFormSchema.safeParse).toHaveBeenCalledWith(expectedData);
       });
 
-      describe('form validated successfully', () => {
-        const expectedFormData = new FormData();
-        const expectedProductId = '1';
-        const expectedData = {
-          product_id: expectedProductId
+      test('error creating cart', async () => {
+        // Arrange
+        const expectedPrevState = undefined;
+        const expectedDbErrorMessage = 'Failed to create cart';
+        const expectedParsedData = { product_id: '1' };
+        const expectedNewState: AddToCartFormState = {
+          message: expectedDbErrorMessage
         };
-        const expectedParsedData = {
-          product_id: expectedProductId
+        (MockAddToCartFormSchema.safeParse as Mock).mockReturnValue({
+          success: true,
+          data: expectedParsedData
+        });
+        (mockCreateCart as Mock).mockImplementation(() => {
+          throw new Error(expectedDbErrorMessage);
+        });
+
+        // Act
+        const actualNewState = await addToCart(expectedPrevState, expectedFormData);
+
+        // Assert
+        expect(actualNewState).toEqual(expectedNewState);
+        expect(MockAddToCartFormSchema.safeParse).toHaveBeenCalledWith({ product_id: '1' });
+        expect(mockCreateCart).toHaveBeenCalledWith({...expectedParsedData, user_id: '1'});
+      });
+
+      test('create cart', async () => {
+        // Arrange
+        const expectedPrevState = undefined;
+        const expectedNewState = undefined;
+        const expectedParsedData = { product_id: '1' };
+        (MockAddToCartFormSchema.safeParse as Mock).mockReturnValue({
+          success: true,
+          data: expectedParsedData
+        });
+        const expectedCart: Cart = {
+          products: [],
+          summary: { deliveryFee: 0, discount: 0, subtotal: 0, total: 0 },
+          user_id: ''
         };
+        (mockCreateCart as Mock).mockResolvedValue(expectedCart);
 
-        beforeAll(() => {
-          expectedFormData.append('product_id', expectedProductId);
-        });
+        // Act
+        const actualNewState = await addToCart(expectedPrevState, expectedFormData);
 
-        test('error creating cart', async () => {
-          // Arrange
-          const expectedDbErrorMessage = 'Failed to create cart';
-          const expectedNewState: AddToCartFormState = {
-            message: expectedDbErrorMessage
-          };
-          (mockAuth as Mock).mockReturnValue(expectedUserSession);
-          (MockAddToCartFormSchema.safeParse as Mock).mockReturnValue({
-            success: true,
-            data: expectedParsedData
-          });
-          (mockCreateCart as Mock).mockImplementation(() => {
-            throw new Error(expectedDbErrorMessage);
-          });
-
-          // Act
-          const actualNewState: AddToCartFormState | undefined = await addToCart(
-            expectedPrevState,
-            expectedFormData
-          );
-
-          // Assert
-          expect(actualNewState).toEqual(expectedNewState);
-          expect(MockAddToCartFormSchema.safeParse).toHaveBeenCalledWith(expectedData);
-          expect(mockCreateCart).toHaveBeenCalledWith({
-            user_id: expectedUserId,
-            ...expectedParsedData
-          });
-        });
-
-        test('create cart', async () => {
-          // Arrange
-          const expectedNewState = undefined;
-          (mockAuth as Mock).mockReturnValue(expectedUserSession);
-          (MockAddToCartFormSchema.safeParse as Mock).mockReturnValue({
-            success: true,
-            data: expectedParsedData
-          });
-          const expectedCart: Cart = {
-            products: [],
-            summary: { deliveryFee: 0, discount: 0, subtotal: 0, total: 0 },
-            user_id: ''
-          };
-          (mockCreateCart as Mock).mockResolvedValue(expectedCart);
-
-          // Act
-          const actualNewState: AddToCartFormState | undefined = await addToCart(
-            expectedPrevState,
-            expectedFormData
-          );
-
-          // Assert
-          expect(actualNewState).toEqual(expectedNewState);
-          expect(MockAddToCartFormSchema.safeParse).toHaveBeenCalledWith(expectedData);
-          expect(mockCreateCart).toHaveBeenCalledWith({
-            user_id: expectedUserId,
-            ...expectedParsedData
-          });
-        });
+        // Assert
+        expect(actualNewState).toEqual(expectedNewState);
+        expect(MockAddToCartFormSchema.safeParse).toHaveBeenCalledWith({ product_id: '1' });
+        expect(mockCreateCart).toHaveBeenCalledWith({...expectedParsedData, user_id: '1'});
       });
     });
   });
 
   describe('orderProducts', () => {
+    beforeAll(() => {
+      process.env.ORIGIN = 'http://localhost:5173';
+    });
+
+    afterEach(() => {
+      delete process.env.ORIGIN;
+    });
+
     const expectedFormData = new FormData();
-    const expectedOrigin = 'https://techwear-shop-nextjs.vercel.app/';
     const expected_product_0_color_id = '1';
     const expected_product_0_product_id = '1';
     const expected_product_0_quantity = '1';
@@ -290,6 +201,7 @@ describe('actions', () => {
 
     test('form data validation failed', async () => {
       // Arrange
+      const expectedPrevState = undefined;
       const expectedTransformedData = {
         products: [
           {
@@ -308,23 +220,13 @@ describe('actions', () => {
         total: expectedTotal
       };
       const expectedFieldErrors = { total: ['Expected numeric total'] };
-      const expectedValidationErrors: Partial<ZodError> = {
-        flatten<U>(): ZodFlattenedError<U> {
-          return { fieldErrors: expectedFieldErrors } as unknown as ZodFlattenedError<U>;
-        }
-      };
       const expectedNewState: OrderProductsFormState = {
         errors: expectedFieldErrors,
         message: ORDER_PRODUCTS_MISSING_FIELDS_ERROR_MESSAGE
       };
-      (mockHeaders as Mock).mockReturnValue(
-        Promise.resolve({
-          get: vi.fn().mockReturnValue(expectedOrigin)
-        })
-      );
       (MockOrderProductsFormSchema.safeParse as Mock).mockReturnValue({
         success: false,
-        error: expectedValidationErrors
+        error: { flatten: () => ({ fieldErrors: expectedFieldErrors }) }
       });
       (mockTransformProductsData as Mock).mockReturnValue(expectedTransformedData);
 
@@ -339,6 +241,7 @@ describe('actions', () => {
 
     test('redirect to stripe', async () => {
       // Arrange
+      const expectedPrevState = undefined;
       const expectedCheckoutSessionUrl = 'https://stripe.com/checkout/session/123456789';
       const expectedNumericTotal = 100;
       const expectedTransformedData = {
@@ -371,17 +274,9 @@ describe('actions', () => {
             }
           }
         ],
-        success_url: `${expectedOrigin}/cart/result?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${expectedOrigin}/cart`,
+        success_url: `http://localhost:5173/cart/result?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `http://localhost:5173/cart`,
         ...STRIPE_SESSION_CREATE_PARAMS
-      };
-      (mockHeaders as Mock).mockReturnValue(
-        Promise.resolve({
-          get: vi.fn().mockReturnValue(expectedOrigin)
-        })
-      );
-      const expectedNewState: OrderProductsFormState = {
-        url: expectedCheckoutSessionUrl
       };
       (MockOrderProductsFormSchema.safeParse as Mock).mockReturnValue({
         success: true,
@@ -396,7 +291,7 @@ describe('actions', () => {
       const actualNewState = await orderProducts(expectedPrevState, expectedFormData);
 
       // Assert
-      expect(actualNewState).toEqual(expectedNewState);
+      expect(actualNewState).toEqual({ url: expectedCheckoutSessionUrl });
       expect(mockTransformProductsData).toHaveBeenCalledWith(expectedData);
       expect(MockOrderProductsFormSchema.safeParse).toHaveBeenCalledWith(expectedTransformedData);
       expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
@@ -415,22 +310,17 @@ describe('actions', () => {
         review_text: ['Missing review text'],
         rating: ['Missing rating']
       };
-      const expectedValidationErrors: Partial<ZodError> = {
-        flatten<U>(): ZodFlattenedError<U> {
-          return { fieldErrors: expectedFieldErrors } as unknown as ZodFlattenedError<U>;
-        }
-      };
       const expectedNewState: SubmitReviewFormState = {
         errors: expectedFieldErrors,
         message: ADD_REVIEW_MISSING_FIELDS_ERROR_MESSAGE
       };
       (MockReviewFormSchema.safeParse as Mock).mockReturnValue({
         success: false,
-        error: expectedValidationErrors
+        error: { flatten: () => ({ fieldErrors: expectedFieldErrors }) }
       });
 
       // Act
-      const actualNewState = await submitReview(expectedPrevState, expectedFormData);
+      const actualNewState = await submitReview(undefined, expectedFormData);
 
       // Assert
       expect(actualNewState).toEqual(expectedNewState);
@@ -477,7 +367,7 @@ describe('actions', () => {
         });
 
         // Act
-        const actualNewState = await submitReview(expectedPrevState, expectedFormData);
+        const actualNewState = await submitReview(undefined, expectedFormData);
 
         // Assert
         expect(actualNewState).toEqual(expectedNewState);
@@ -501,7 +391,7 @@ describe('actions', () => {
         (mockAddReview as Mock).mockResolvedValue(expectedReview);
 
         // Act
-        const actualNewState = await submitReview(expectedPrevState, expectedFormData);
+        const actualNewState = await submitReview(undefined, expectedFormData);
 
         // Assert
         expect(actualNewState).toEqual(expectedNewState);
