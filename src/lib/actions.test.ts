@@ -40,20 +40,20 @@ vi.mock('./stripe', () => ({
     checkout: {
       sessions: {
         create: vi.fn()
-       }
-     }
-   }
+      }
+    }
+  }
 }));
 vi.mock('./form_schemas', () => ({
   AddToCartFormSchema: {
     safeParse: vi.fn()
-   },
+  },
   OrderProductsFormSchema: {
     safeParse: vi.fn()
-   },
+  },
   ReviewFormSchema: {
     safeParse: vi.fn()
-   }
+  }
 }));
 vi.mock('./transformers');
 
@@ -118,7 +118,7 @@ describe('actions', () => {
         // Assert
         expect(actualNewState).toEqual(expectedNewState);
         expect(MockAddToCartFormSchema.safeParse).toHaveBeenCalledWith({ product_id: '1' });
-        expect(mockCreateCart).toHaveBeenCalledWith({...expectedParsedData, user_id: '1'});
+        expect(mockCreateCart).toHaveBeenCalledWith({ ...expectedParsedData, user_id: '1' });
       });
 
       test('create cart', async () => {
@@ -143,7 +143,7 @@ describe('actions', () => {
         // Assert
         expect(actualNewState).toEqual(expectedNewState);
         expect(MockAddToCartFormSchema.safeParse).toHaveBeenCalledWith({ product_id: '1' });
-        expect(mockCreateCart).toHaveBeenCalledWith({...expectedParsedData, user_id: '1'});
+        expect(mockCreateCart).toHaveBeenCalledWith({ ...expectedParsedData, user_id: '1' });
       });
     });
   });
