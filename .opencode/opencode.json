@@ -1,5 +1,67 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "lsp": true,
-  "plugin": ["@sveltejs/opencode"]
+  "plugin": ["@sveltejs/opencode"],
+  "default_agent": "coordinator",
+  "agent": {
+    "coordinator": {
+      "description": "Coordinates all specialized agents",
+      "mode": "primary",
+      "prompt": "{file:agents/coordinator.prompt}",
+      "permission": {
+        "edit": "deny",
+        "bash": "allow"
+      }
+    },
+
+    "architect": {
+      "description": "Designs systems and implementation plans",
+      "mode": "subagent",
+      "prompt": "{file:agents/architect.prompt}",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny"
+      }
+    },
+
+    "coder": {
+      "description": "Implements features and fixes",
+      "mode": "subagent",
+      "prompt": "{file:agents/coder.prompt}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow"
+      }
+    },
+
+    "refactorer": {
+      "description": "Improves code structure without changing behavior",
+      "mode": "subagent",
+      "prompt": "{file:agents/refactorer.prompt}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow"
+      }
+    },
+
+    "reviewer": {
+      "description": "Reviews code for correctness and maintainability",
+      "mode": "subagent",
+      "prompt": "{file:agents/reviewer.prompt}",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny"
+      }
+    },
+
+    "specifier": {
+      "description": "Clarifies and formalizes requirements",
+      "mode": "subagent",
+      "prompt": "{file:agents/specifier.prompt}",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny"
+      }
+    }
+  }
 }

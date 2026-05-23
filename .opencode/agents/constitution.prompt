@@ -1,0 +1,10 @@
+# HTW Constitution
+
+This file takes precedence over subordinate files.
+Read and obey the following subordinate documents in order.
+
+1. `constitution/project.prompt`
+2. `constitution/engineering.prompt`
+3. `constitution/workflow.prompt`
+
+If two subordinate files conflict, the earlier file wins.
