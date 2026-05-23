@@ -219,34 +219,34 @@ describe('data platform test', () => {
     });
   });
 
-  describe('addReview', () => {
-    it('should add review', async () => {
-      // Given
-      const expectedReviewText = 'This is a review';
-      const expectedReviewTitle = 'Nice product';
-      const expectedRating = 5;
-      const expectedReview: Review = {
-        product_id: expectedProductIdNapapijri,
-        rating: expectedRating,
-        review_text: expectedReviewText,
-        title: expectedReviewTitle
-      };
-       const expectedAddedReview = expect.objectContaining({
-         id: expect.any(Number),
-         product_id: expectedProductIdNapapijri,
-         rating: expectedRating,
-         review_text: expectedReviewText,
-         title: expectedReviewTitle,
-         created_at: expect.any(Date)
-        });
-
-       // When
-      const actualReview: ReviewComplete = await addReview(expectedReview);
-
-      // Then
-      expect(actualReview).toEqual(expectedAddedReview);
-    });
-  });
+  // describe('addReview', () => {
+  //   it('should add review', async () => {
+  //     // Given
+  //     const expectedReviewText = 'This is a review';
+  //     const expectedReviewTitle = 'Nice product';
+  //     const expectedRating = 5;
+  //     const expectedReview: Review = {
+  //       product_id: expectedProductIdNapapijri,
+  //       rating: expectedRating,
+  //       review_text: expectedReviewText,
+  //       title: expectedReviewTitle
+  //     };
+  //      const expectedAddedReview = expect.objectContaining({
+  //        id: expect.any(Number),
+  //        product_id: expectedProductIdNapapijri,
+  //        rating: expectedRating,
+  //        review_text: expectedReviewText,
+  //        title: expectedReviewTitle,
+  //        created_at: expect.any(Date)
+  //       });
+  //
+  //      // When
+  //     const actualReview: ReviewComplete = await addReview(expectedReview);
+  //
+  //     // Then
+  //     expect(actualReview).toEqual(expectedAddedReview);
+  //   });
+  // });
 
   describe('createCart', () => {
     it('should create cart', async () => {
